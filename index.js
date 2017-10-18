@@ -10,7 +10,6 @@ module.exports = function logRequest(options) {
     var startOpts = {req: {
         method: req.method,
         url: req.url,
-        headers: req.headers,
         date: now
     }};
 
@@ -32,7 +31,7 @@ module.exports = function logRequest(options) {
     res.on('finish', function responseSent() {
       var diff = process.hrtime(time);
       req.log.info({res: {
-          status: statusCode
+          status: res.statusCode
       }, duration: diff[0] * 1e3 + diff[1] * 1e-6} + 'ms', 'end request');
     });
 
