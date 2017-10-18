@@ -7,7 +7,12 @@ module.exports = function logRequest(options) {
   return function (req, res, next) {
     var id = req.headers[headerName] || uuid.v4();
     var now = Date.now();
-    var startOpts = {req: req};
+    var startOpts = {req: {
+        method: req.method,
+        url: req.url,
+        headers: req.headers,
+        date: now
+    }};
 
     req.log = logger.child({
       type: 'request',
@@ -21,12 +26,14 @@ module.exports = function logRequest(options) {
 
     res.setHeader(headerName, id);
 
-    req.log.info(startOpts, 'start request');
+    req.log.info(startOpts, 'start');
     
     var time = process.hrtime();
     res.on('finish', function responseSent() {
       var diff = process.hrtime(time);
-      req.log.info({res: res, duration: diff[0] * 1e3 + diff[1] * 1e-6}, 'end request');
+      req.log.info({res: {
+          status: statusCode
+      }, duration: diff[0] * 1e3 + diff[1] * 1e-6} + 'ms', 'end request');
     });
 
     next();
