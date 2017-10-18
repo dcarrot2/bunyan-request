@@ -31,8 +31,9 @@ module.exports = function logRequest(options) {
     res.on('finish', function responseSent() {
       var diff = process.hrtime(time);
       req.log.info({res: {
-          status: res.statusCode
-      }, duration: diff[0] * 1e3 + diff[1] * 1e-6} + 'ms', 'end request');
+          status: res.statusCode,
+          duration: diff[0] * 1e3 + diff[1] * 1e-6 + ' ms'
+      }}, 'end request');
     });
 
     next();
